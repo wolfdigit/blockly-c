@@ -1,3 +1,9 @@
+var COLOR = {MAIN:215, COUT:230, CIN:190};
+Blockly.Blocks.math.HUE = 100;
+Blockly.Blocks.variables.HUE = 70;
+Blockly.Blocks.logic.HUE = 30;
+Blockly.Blocks.loops.HUE = 0;
+
 Blockly.Blocks['main'] = {
   init: function() {
     this.appendDummyInput()
@@ -14,7 +20,7 @@ Blockly.Blocks['main'] = {
     this.appendDummyInput()
         .appendField("}");
     this.setInputsInline(false);
-    this.setColour(230);
+    this.setColour(COLOR.MAIN);
     this.setTooltip('tip');
     this.setHelpUrl('help');
   }
@@ -31,7 +37,7 @@ Blockly.Blocks['cout'] = {
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(230);
+    this.setColour(COLOR.COUT);
     this.setTooltip('');
     this.setHelpUrl('');
   }
@@ -46,7 +52,7 @@ Blockly.Blocks['outstream_text'] = {
         .appendField("\"");
     this.setInputsInline(false);
     this.setOutput(true, "outstream");
-    this.setColour(230);
+    this.setColour(COLOR.COUT);
     this.setTooltip('');
     this.setHelpUrl('');
   }
@@ -60,7 +66,20 @@ Blockly.Blocks['outstream_var'] = {
         .appendField(new Blockly.FieldVariable("item"), "NAME");
     this.setInputsInline(false);
     this.setOutput(true, "outstream");
-    this.setColour(230);
+    this.setColour(COLOR.COUT);
+    this.setTooltip('');
+    this.setHelpUrl('');
+  }
+};
+
+Blockly.Blocks['outstream_endl'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField(" << ")
+        .appendField("endl");
+    this.setInputsInline(true);
+    this.setOutput(true, "outstream");
+    this.setColour(COLOR.COUT);
     this.setTooltip('');
     this.setHelpUrl('');
   }
@@ -76,7 +95,7 @@ Blockly.Blocks['cin'] = {
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(230);
+    this.setColour(COLOR.CIN);
     this.setTooltip('');
     this.setHelpUrl('');
   }
@@ -90,63 +109,53 @@ Blockly.Blocks['instream_var'] = {
         .appendField(new Blockly.FieldVariable("item"), "NAME");
     this.setInputsInline(false);
     this.setOutput(true, "instream");
-    this.setColour(230);
+    this.setColour(COLOR.CIN);
     this.setTooltip('');
     this.setHelpUrl('');
   }
 };
 
-Blockly.Blocks['outstream_endl'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(" << ")
-        .appendField("endl");
-    this.setInputsInline(false);
-    this.setOutput(true, "outstream");
-    this.setColour(230);
-    this.setTooltip('');
-    this.setHelpUrl('');
-  }
-};
 
 
 
 Blockly.Blocks['loop_for'] = {
   init: function() {
-    this.appendValueInput("NAME")
+    this.appendValueInput("VAL1")
         .setCheck("Number")
         .appendField("for (")
-        .appendField(new Blockly.FieldVariable("item"), "NAME")
+        .appendField(new Blockly.FieldVariable("i"), "VAR1")
         .appendField("=");
-    this.appendValueInput("NAME")
+    this.appendValueInput("VAL2")
         .setCheck("Number")
         .appendField("; ")
-        .appendField(new Blockly.FieldVariable("item"), "NAME2")
-        .appendField(new Blockly.FieldDropdown([["<","OPTIONNAME"], ["<=","OPTIONNAME"], [">","OPTIONNAME"], [">=","OPTIONNAME"]]), "NAME4");
-    this.appendValueInput("NAME")
+        .appendField(new Blockly.FieldVariable("i"), "VAR2")
+        .appendField(new Blockly.FieldDropdown([["<","LT"], ["<=","LE"], [">","GT"], [">=","GE"]]), "CMP");
+    this.appendValueInput("VAL3")
         .setCheck("Number")
         .appendField("; ")
-        .appendField(new Blockly.FieldVariable("item"), "NAME3")
+        .appendField(new Blockly.FieldVariable("i"), "VAR3")
         .appendField("+=");
     this.appendDummyInput()
         .appendField(") {");
-    this.appendStatementInput("NAME")
+    this.appendStatementInput("DO")
         .setCheck(null);
     this.appendDummyInput()
         .appendField("}");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setInputsInline(true);
-    this.setColour(230);
+    this.setColour(Blockly.Blocks.loops.HUE);
     this.setTooltip('');
     this.setHelpUrl('');
     this.onchange = function(changeEvent) {
-      if (typeof changeEvent.name!=="undefined" && typeof changeEvent.newValue!=="undefined") {
-        this.inputList[0].fieldRow[1].setValue(changeEvent.newValue);
-        this.inputList[1].fieldRow[1].setValue(changeEvent.newValue);
-        this.inputList[2].fieldRow[1].setValue(changeEvent.newValue);
-        //console.log(this);
-        //console.log(changeEvent);          
+      if (typeof changeEvent.name!=="undefined" && changeEvent.name.startsWith("VAR")) {
+        if (typeof changeEvent.newValue!=="undefined") {
+          this.inputList[0].fieldRow[1].setValue(changeEvent.newValue);
+          this.inputList[1].fieldRow[1].setValue(changeEvent.newValue);
+          this.inputList[2].fieldRow[1].setValue(changeEvent.newValue);
+          //console.log(this);
+          //console.log(changeEvent);          
+        }
       }
     };
   }

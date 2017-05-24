@@ -57,13 +57,13 @@
   <category name="主程式" colour="#5ba55b">
     <block type="main">
       <statement name="NAME">
-        <shadow type="cout">
+        <!--<shadow type="cout">
           <value name="NAME">
             <shadow type="outstream_text">
               <field name="NAME">Hello, world!</field>
             </shadow>
           </value>
-        </shadow>
+        </shadow>-->
       </statement>
     </block>
   </category>
@@ -99,9 +99,9 @@
       <field name="OP">AND</field>
     </block>
     <block type="logic_negate"></block>
-    <block type="logic_boolean">
+    <!--<block type="logic_boolean">
       <field name="BOOL">TRUE</field>
-    </block>
+    </block>-->
   </category>
   <category name="迴圈" colour="#a55b5b">
     <block type="loop_for"></block>
@@ -130,49 +130,51 @@
   <script>
     function gen_c(block) {
       //console.log(block.id);
-      var retv;
-      retv = [];
-      //retv = "[" + block.id + " ";
+      var retv = [];
+
+      var prevType = 0;
       for (var i in block.inputList) {
           var input = block.inputList[i];
-          //console.log(input);
+
           var inputLine = "";
           for (var j in input.fieldRow) {
+              //inputLine += input.fieldRow[j].getValue();  //"value" can be meaningful but not code-compatible symbol
               inputLine += input.fieldRow[j].text_;
           }
-          //inputLine += '\n';
+          
           if (input.type==5) {          // dummy input
               //console.log(inputLine);
               //retv += "T5";
+              //if (block.inputsInline==false) {
+              //  inputLine += '\n';
+              //}
+              if (prevType==5 || prevType==3) inputLine = '\n' + inputLine;
           }
           else if (input.type==3) {     // statement input
               //console.log(input);
               //console.log(Object.keys(input.connection.dbOpposite_));
-              var childLines = [];
               //for (var j=777; j<input.connection.dbOpposite_.length; j++) {
               if (input.connection.targetConnection!=null) {
                   //console.log(input.connection.dbOpposite_[j]);
-                  childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                  var childLine = gen_c(input.connection.targetConnection.sourceBlock_);
                   var indent = '    ';
                   childLine = indent + childLine.split('\n').join('\n'+indent);
                   //inputLine = inputLine + childLine;
-                  childLines.push(childLine);
+                  inputLine = '\n' + inputLine + childLine;
               }
-              inputLine = inputLine + '\n' + childLines.join('\n');
               //console.log(input.connection.dbOpposite_);
           }
           else if (input.type==1) {     // value input
               //console.log(input);
-              var childLines = [];
               //for (var j=777; j<input.connection.dbOpposite_.length; j++) {
               if (input.connection.targetConnection!=null) {
                 //childLine = gen_c(input.connection.dbOpposite_[j].sourceBlock_);
-                childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                var childLine = gen_c(input.connection.targetConnection.sourceBlock_);
                 //alert("["+childLine+"]");
                   
-                childLines.push(childLine);
+                inputLine = inputLine + childLine;
+                if (prevType==5 || prevType==3) inputLine = '\n' + inputLine;
               }
-              inputLine = inputLine + childLines.join('\n');
           }
           else {
               inputLine += "T"+input.type;
@@ -181,15 +183,20 @@
           }
           //if (!block.inputsIninputLine) inputLine += '\n';
           //retv += inputLine;
+          
+          prevType = input.type;
+        
           retv.push(inputLine);
       }
       //retv += "]";
-      if (block.inputsInline!==false) {
+      
+      if (true || block.inputsInline!==false) {
         retv = retv.join('');
       }
       else {
         retv = retv.join('\n');
       }
+      
 
 
       if (block.nextConnection!=null && block.nextConnection.targetConnection!=null) {
