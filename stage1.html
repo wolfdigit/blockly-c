@@ -129,7 +129,7 @@
   </script>
   <script>
     function gen_c(block) {
-      console.log(block.id);
+      //console.log(block.id);
       var retv;
       retv = [];
       //retv = "[" + block.id + " ";
@@ -149,27 +149,30 @@
               //console.log(input);
               //console.log(Object.keys(input.connection.dbOpposite_));
               var childLines = [];
-              for (var j=777; j<input.connection.dbOpposite_.length; j++) {
+              //for (var j=777; j<input.connection.dbOpposite_.length; j++) {
+              if (input.connection.targetConnection!=null) {
                   //console.log(input.connection.dbOpposite_[j]);
-                  childLine = gen_c(input.connection.dbOpposite_[j].sourceBlock_);
+                  childLine = gen_c(input.connection.targetConnection.sourceBlock_);
                   var indent = '    ';
-                  childLine = indent + childLine.split('\n').join(indent+'\n');
+                  childLine = indent + childLine.split('\n').join('\n'+indent);
                   //inputLine = inputLine + childLine;
                   childLines.push(childLine);
               }
-              inputLine = inputLine + childLines.join('\n');
+              inputLine = inputLine + '\n' + childLines.join('\n');
               //console.log(input.connection.dbOpposite_);
           }
           else if (input.type==1) {     // value input
               //console.log(input);
+              var childLines = [];
               //for (var j=777; j<input.connection.dbOpposite_.length; j++) {
               if (input.connection.targetConnection!=null) {
                 //childLine = gen_c(input.connection.dbOpposite_[j].sourceBlock_);
-                //childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                //alert("["+childLine+"]");
                   
-                inputLine = inputLine + childLine;
-                //console.log(inputLine);
+                childLines.push(childLine);
               }
+              inputLine = inputLine + childLines.join('\n');
           }
           else {
               inputLine += "T"+input.type;
@@ -182,12 +185,20 @@
       }
       //retv += "]";
       if (block.inputsInline!==false) {
-        return retv.join('');
+        retv = retv.join('');
       }
       else {
-        return retv.join('\n');
+        retv = retv.join('\n');
       }
-      //return retv;
+
+
+      if (block.nextConnection!=null && block.nextConnection.targetConnection!=null) {
+        if (block.nextConnection.targetConnection.sourceBlock_.id != block.id) {
+          retv += '\n' + gen_c(block.nextConnection.targetConnection.sourceBlock_);
+        }
+      }
+
+      return retv;
     }
       
       
