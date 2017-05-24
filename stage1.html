@@ -35,7 +35,7 @@
 </head>
 <body>
   <div id="menu" style="width:100%; height: 20px">
-      <span>第一級 - 變數與運算</span> <pre id="vars" style="display:inline-block; font-weight:bold">workspace.blockDB_['AoWF/PsGb_Haf0_Ggvn1'].inputList[3].fieldRow[0].textElement_.innerHTML</pre>
+      <span>第一級 - 變數與運算</span> <!--<pre id="vars" style="display:inline-block; font-weight:bold">workspace.blockDB_['AoWF/PsGb_Haf0_Ggvn1'].inputList[3].fieldRow[0].textElement_.innerHTML</pre>-->
       <!--
     <ul>
       <li><a href="?a1">a1</a></li>
@@ -49,7 +49,8 @@
     <div style="height:100%; width:3em">
         <button id="import" style="position:absolute; margin:auto; top:0; bottom:0; height:3em; width:3em" onclick="javascript:Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(document.getElementById('msg').value), workspace);">&lt;</button>
     </div>
-    <textarea id="msg" style="height:100%; width: 45%;"></textarea>
+    <textarea id="c_code" style="height:65%; width: 45%; position:absolute; top:0"></textarea>
+    <textarea id="msg" style="height:30%; width: 45%; position:absolute; bottom:0"></textarea>
   </div>
 
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
@@ -111,17 +112,114 @@
     }
   </script>
   <script>
+    function gen_c(block) {
+      //console.log(block);
+      var retv;
+      retv = [];
+      //retv = "[" + block.id + " ";
+      for (var i in block.inputList) {
+          var input = block.inputList[i];
+          //console.log(input);
+          var inputLine = "";
+          for (var j in input.fieldRow) {
+              inputLine += input.fieldRow[j].text_;
+          }
+          //inputLine += '\n';
+          if (input.type==5) {          // dummy input
+              //console.log(inputLine);
+              //retv += "T5";
+          }
+          else if (input.type==3) {     // statement input
+              //console.log(input);
+              //console.log(Object.keys(input.connection.dbOpposite_));
+              var childLines = [];
+              for (var j=0; j<input.connection.dbOpposite_.length; j++) {
+                  console.log(input.connection.dbOpposite_[j]);
+                  childLine = gen_c(input.connection.dbOpposite_[j].sourceBlock_);
+                  var indent = '    ';
+                  childLine = indent + childLine.split('\n').join(indent+'\n');
+                  //inputLine = inputLine + childLine;
+                  childLines.push(childLine);
+              }
+              inputLine = inputLine + childLines.join('\n');
+              //console.log(input.connection.dbOpposite_);
+              /*
+              if (input.connection.targetConnection!=null) {
+                childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                //retv += childLine + ": " + inputLine;
+                //console.log(input);
+                //console.log(childLine);
+                var indent = '    ';
+                childLine = indent + childLine.split('\n').join(indent+'\n');
+                inputLine = inputLine + childLine;
+                //console.log(inputLine);
+                //console.log(childLine);
+                //retv += "T3";
+              }
+              */
+          }
+          else if (input.type==1) {     // value input
+              //console.log(input);
+              if (input.connection.targetConnection!=null) {
+                childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                inputLine = inputLine + childLine;
+                //console.log(inputLine);
+              }
+          }
+          else {
+              inputLine += "T"+input.type;
+              console.log(input);
+              //retv += "T"+input.type;
+          }
+          //if (!block.inputsIninputLine) inputLine += '\n';
+          //retv += inputLine;
+          retv.push(inputLine);
+      }
+      //retv += "]";
+      if (block.inputsInline!==false) {
+        return retv.join('');
+      }
+      else {
+        return retv.join('\n');
+      }
+      //return retv;
+    }
+      
+      
     workspace.addChangeListener(function(event){
       var xml = Blockly.Xml.workspaceToDom(workspace);
       var xml_text = Blockly.Xml.domToText(xml);
       document.getElementById("msg").value = xml_text;
         
+        
+        
+      // var declare line
+      var varLine;
       if (Blockly.Variables.allUsedVariables(workspace).length>0) {
-          document.getElementById("vars").innerHTML = "int " + Blockly.Variables.allUsedVariables(workspace).join(', ') + ";";
+          varLine = "int " + Blockly.Variables.allUsedVariables(workspace).join(', ') + ";";
       }
       else {
-          document.getElementById("vars").innerHTML = "";
+          varLine = "";
       }
+      //document.getElementById("vars").innerHTML = varLine;
+        
+      var blockIds = Object.keys(workspace.blockDB_);
+      //console.log(blockIds);
+      for (var k in workspace.blockDB_) {
+          //console.log(k);
+          var block = workspace.blockDB_[k];
+          //console.log(block);
+          if (block.type=='main') {
+              //block.inputList[3].fieldRow[0].textElement_.innerHTML = varLine;
+              //block.inputList[3].fieldRow[0].text_ = varLine;
+              block.inputList[3].fieldRow[0].setValue(varLine);
+              
+              c_code = gen_c(block);
+              //console.log(c_code);
+              document.getElementById('c_code').value = c_code;
+          }
+      }
+        
     });
   </script>
   <script>

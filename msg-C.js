@@ -391,7 +391,7 @@ Blockly.Msg.LISTS_INDEX_OF_INPUT_IN_LIST = Blockly.Msg.LISTS_INLIST;
 Blockly.Msg.PROCEDURES_DEFRETURN_COMMENT = Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT;
 
 Blockly.Msg.MATH_CHANGE_TITLE = "%1 += %2 ;";
-Blockly.Msg.VARIABLES_SET = "%1 ＝ %2 ;";
+Blockly.Msg.VARIABLES_SET = "%1 = %2 ;";
 
 Blockly.Msg.MATH_ADDITION_SYMBOL = '+';
 Blockly.Msg.MATH_SUBTRACTION_SYMBOL = '-';

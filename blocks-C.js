@@ -41,7 +41,7 @@ Blockly.Blocks['outstream_text'] = {
   init: function() {
     this.appendValueInput("NAME")
         .setCheck("outstream")
-        .appendField("<< \"")
+        .appendField(" << \"")
         .appendField(new Blockly.FieldTextInput("asdf"), "NAME")
         .appendField("\"");
     this.setInputsInline(false);
@@ -56,7 +56,7 @@ Blockly.Blocks['outstream_var'] = {
   init: function() {
     this.appendValueInput("NAME")
         .setCheck("outstream")
-        .appendField("<<")
+        .appendField(" << ")
         .appendField(new Blockly.FieldVariable("item"), "NAME");
     this.setInputsInline(false);
     this.setOutput(true, "outstream");
@@ -86,7 +86,7 @@ Blockly.Blocks['instream_var'] = {
   init: function() {
     this.appendValueInput("NAME")
         .setCheck("instream")
-        .appendField(">>")
+        .appendField(" >> ")
         .appendField(new Blockly.FieldVariable("item"), "NAME");
     this.setInputsInline(false);
     this.setOutput(true, "instream");
@@ -99,7 +99,7 @@ Blockly.Blocks['instream_var'] = {
 Blockly.Blocks['outstream_endl'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("<< ")
+        .appendField(" << ")
         .appendField("endl");
     this.setInputsInline(false);
     this.setOutput(true, "outstream");
