@@ -33,7 +33,7 @@
 </head>
 <body>
   <div id="menu" style="width:100%; height: 20px">
-      <span>第一級 - 變數與運算</span> <pre id="vars" style="display:inline-block; font-weight:bold">宣告變數那一行</pre>
+      <span>第二級 - 判斷式</span> <pre id="vars" style="display:inline-block; font-weight:bold">宣告變數那一行</pre>
       <!--
     <ul>
       <li><a href="?a1">a1</a></li>
@@ -85,6 +85,19 @@
     </block>
     <block type="math_arithmetic">
       <field name="OP">ADD</field>
+    </block>
+  </category>
+  <category name="判斷式">
+    <block type="controls_if"></block>
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+    </block>
+    <block type="logic_operation">
+      <field name="OP">AND</field>
+    </block>
+    <block type="logic_negate"></block>
+    <block type="logic_boolean">
+      <field name="BOOL">TRUE</field>
     </block>
   </category>
 </xml>
