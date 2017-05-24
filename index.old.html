@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: JS Interpreter</title>
+  <script src="acorn_interpreter.js"></script>
+  <script src="google-blockly/blockly_uncompressed.js"></script>
+  <script src="google-blockly/blocks_compressed.js"></script>
+  <script src="google-blockly/javascript_compressed.js"></script>
+  <script src="msg-C.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+  </style>
+</head>
+<body>
+  <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
+    <a href="../index.html">Demos</a> &gt; JS Interpreter</h1>
+
+  <p>This is a simple demo of executing code with a sandboxed JavaScript interpreter.</p>
+
+  <p>&rarr; More info on <a href="https://developers.google.com/blockly/guides/configure-blockly/web/running-javascript#js_interpreter">JS Interpreter</a>&hellip;</p>
+
+  <p>
+    <button onclick="parseCode()">Parse JavaScript</button>
+    <button onclick="stepCode()" id="stepButton" disabled="disabled">Step JavaScript</button>
+  </p>
+
+  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="主程式">
+    <block type="main">
+      <statement name="NAME">
+        <shadow type="cout">
+          <value name="NAME">
+            <shadow type="outstream_text">
+              <field name="NAME">Hello, world!</field>
+            </shadow>
+          </value>
+        </shadow>
+      </statement>
+    </block>
+  </category>
+  <category name="輸入輸出">
+    <block type="cout"></block>
+    <block type="outstream_text">
+      <field name="NAME">asdf</field>
+    </block>
+    <block type="outstream_var">
+      <field name="NAME">item</field>
+    </block>
+    <block type="outstream_endl"></block>
+    <block type="cin"></block>
+    <block type="instream_var">
+      <field name="NAME">item</field>
+    </block>
+  </category>
+  <category name="變數" colour="#A65C81" custom="VARIABLE"></category>
+  <category name="算數">
+    <block type="math_number">
+      <field name="NUM">0</field>
+    </block>
+    <block type="math_arithmetic">
+      <field name="OP">ADD</field>
+      <value name="A">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="B">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="判斷式">
+    <block type="controls_if"></block>
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+    </block>
+    <block type="logic_operation">
+      <field name="OP">AND</field>
+    </block>
+    <block type="logic_negate"></block>
+    <block type="logic_boolean">
+      <field name="BOOL">TRUE</field>
+    </block>
+  </category>
+  <category name="迴圈">
+    <block type="loop_for"></block>
+  </category>
+</xml>
+
+  <xml id="startBlocks" style="display: none">
+    <block type="variables_set" inline="true" x="20" y="20">
+      <field name="VAR">n</field>
+      <value name="VALUE">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+      <next>
+        <block type="controls_repeat_ext" inline="true">
+          <value name="TIMES">
+            <block type="math_number">
+              <field name="NUM">4</field>
+            </block>
+          </value>
+          <statement name="DO">
+            <block type="variables_set" inline="true">
+              <field name="VAR">n</field>
+              <value name="VALUE">
+                <block type="math_arithmetic" inline="true">
+                  <field name="OP">MULTIPLY</field>
+                  <value name="A">
+                    <block type="variables_get">
+                      <field name="VAR">n</field>
+                    </block>
+                  </value>
+                  <value name="B">
+                    <block type="math_number">
+                      <field name="NUM">2</field>
+                    </block>
+                  </value>
+                </block>
+              </value>
+            </block>
+          </statement>
+          <next>
+            <block type="text_print" inline="false">
+              <value name="TEXT">
+                <block type="variables_get">
+                  <field name="VAR">n</field>
+                </block>
+              </value>
+            </block>
+          </next>
+        </block>
+      </next>
+    </block>
+  </xml>
+
+    <textarea id="msg"></textarea>
+    
+  <script src="blocks-C.js"></script>
+  <script src="blocks-altered.js"></script>
+  <script>
+    var workspace = Blockly.inject('blocklyDiv',
+        {media: '../../media/',
+         toolbox: document.getElementById('toolbox')});
+    Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+                               workspace);
+  </script>
+  <script>
+    workspace.addChangeListener(function(event){
+      var xml = Blockly.Xml.workspaceToDom(workspace);
+      var xml_text = Blockly.Xml.domToText(xml);
+      document.getElementById("msg").value = xml_text;
+    });
+  </script>
+  <script>
+    /*
+    var myInterpreter = null;
+
+    function initApi(interpreter, scope) {
+      // Add an API function for the alert() block.
+      var wrapper = function(text) {
+        text = text ? text.toString() : '';
+        return interpreter.createPrimitive(alert(text));
+      };
+      interpreter.setProperty(scope, 'alert',
+          interpreter.createNativeFunction(wrapper));
+
+      // Add an API function for the prompt() block.
+      var wrapper = function(text) {
+        text = text ? text.toString() : '';
+        return interpreter.createPrimitive(prompt(text));
+      };
+      interpreter.setProperty(scope, 'prompt',
+          interpreter.createNativeFunction(wrapper));
+
+      // Add an API function for highlighting blocks.
+      var wrapper = function(id) {
+        id = id ? id.toString() : '';
+        return interpreter.createPrimitive(highlightBlock(id));
+      };
+      interpreter.setProperty(scope, 'highlightBlock',
+          interpreter.createNativeFunction(wrapper));
+    }
+
+    var highlightPause = false;
+
+    function highlightBlock(id) {
+      workspace.highlightBlock(id);
+      highlightPause = true;
+    }
+
+    function parseCode() {
+      // Generate JavaScript code and parse it.
+      Blockly.JavaScript.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
+      Blockly.JavaScript.addReservedWords('highlightBlock');
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      myInterpreter = new Interpreter(code, initApi);
+
+      alert('Ready to execute this code:\n\n' + code);
+      document.getElementById('stepButton').disabled = '';
+      highlightPause = false;
+      workspace.highlightBlock(null);
+    }
+
+    function stepCode() {
+      try {
+        var ok = myInterpreter.step();
+      } finally {
+        if (!ok) {
+          // Program complete, no more code to execute.
+          document.getElementById('stepButton').disabled = 'disabled';
+          workspace.highlightBlock(null);
+          return;
+        }
+      }
+      if (highlightPause) {
+        // A block has been highlighted.  Pause execution here.
+        highlightPause = false;
+      } else {
+        // Keep executing until a highlight statement is reached.
+        stepCode();
+      }
+    }
+    */
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: JS Interpreter</title>
+  <script src="acorn_interpreter.js"></script>
+  <script src="google-blockly/blockly_compressed.js"></script>
+  <script src="google-blockly/blocks_compressed.js"></script>
+  <script src="google-blockly/javascript_compressed.js"></script>
+  <script src="msg-C.js"></script>
+  <script src="blocks-C.js"></script>
+  <script src="blocks-altered.js"></script>
+  <style>
+    * {
+      margin: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+        overflow: hidden;
+    }
+    #main > * {
+      display: inline-block;
+    }
+    #menu > ul > li {
+      margin-left: 2em;
+      display: inline-block;
+    }
+    #menu > ul > li::before {
+      content: '> ';
+    }
+  </style>
+</head>
+<body>
+  <div id="menu" style="width:100%; height: 20px">
+    <ul>
+      <li><a href="?a1">a1</a></li>
+      <li><a href="?a2a">a2a</a> <a href="?a2b">a2b</a> <a href="?a2c">a2c</a> <a href="?a2d">a2d</a></li>
+      <li><a href="?a3">a3</a></li>
+    </ul>
+  </div>
+  <div id="main" style="width:100%; height:auto; position:absolute; top:20px; bottom:0">
+    <div id="blocklyDiv" style="height:100%; width: 45%;"></div>
+    <textarea id="msg" style="height:100%; width: 45%;"></textarea>
+  </div>
+
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="主程式">
+    <block type="main">
+      <statement name="NAME">
+        <shadow type="cout">
+          <value name="NAME">
+            <shadow type="outstream_text">
+              <field name="NAME">Hello, world!</field>
+            </shadow>
+          </value>
+        </shadow>
+      </statement>
+    </block>
+  </category>
+  <category name="輸入輸出">
+    <block type="cout"></block>
+    <block type="outstream_text">
+      <field name="NAME">文字</field>
+    </block>
+    <block type="outstream_var">
+      <field name="NAME">a</field>
+    </block>
+    <block type="outstream_endl"></block>
+    <block type="cin"></block>
+    <block type="instream_var">
+      <field name="NAME">a</field>
+    </block>
+  </category>
+  <category name="變數" colour="#A65C81" custom="VARIABLE"></category>
+  <category name="算數">
+    <block type="math_number">
+      <field name="NUM">0</field>
+    </block>
+    <block type="math_arithmetic">
+      <field name="OP">ADD</field>
+    </block>
+  </category>
+  <category name="判斷式">
+    <block type="controls_if"></block>
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+    </block>
+    <block type="logic_operation">
+      <field name="OP">AND</field>
+    </block>
+    <block type="logic_negate"></block>
+    <block type="logic_boolean">
+      <field name="BOOL">TRUE</field>
+    </block>
+  </category>
+  <category name="迴圈">
+    <block type="loop_for"></block>
+  </category>
+</xml>
+
+  <xml id="startBlocks" style="display: none">
+<block type="main" id="r`G:C1l1NB5sRWuV+,bP" x="65" y="102"><statement name="NAME"><shadow type="cout" id="do3BM*6${oUWq]5KXo}y"><value name="NAME"><shadow type="outstream_text" id=":3GU%MeMAR;b{Wu*8VGN"><field name="NAME">Hello, world!</field></shadow></value></shadow><block type="cout" id="tgO0Dx|n4B%?ftSD_6]n"><value name="NAME"><block type="outstream_text" id="i#,ApwUoGUP*mn5iGYtY"><field name="NAME">輸入兩正整數，判斷是否為一個奇數一個偶數</field></block></value><next><block type="cin" id="lGc$!nugtXEOXjN@o9.3"><value name="NAME"><block type="instream_var" id="zGB}Dj]_`-!RlS0D#)fG"><field name="NAME">a</field><value name="NAME"><block type="instream_var" id="^Pfm*!Ec@q,hKXMGU3L6"><field name="NAME">b</field></block></value></block></value><next><block type="controls_if" id="pFoZ#zVxzA-(pw/$l4qw"><mutation else="1"></mutation><value name="IF0"><block type="logic_compare" id="u2$u.4:wS+F]$D}E-M;j"><field name="OP">NEQ</field><value name="A"><block type="math_arithmetic" id="@~ZB-=vTH=V)@Px5+}H_"><field name="OP">MODULUS</field><value name="A"><shadow type="math_number" id="frAZ+Y@wWA-eN?SPQzr#"><field name="NUM">1</field></shadow><block type="math_arithmetic" id="NXU=:AWTb-E{jSYkX)Sr"><field name="OP">ADD</field><value name="A"><shadow type="math_number" id="SlYKEMD}wg0QNJO2s%YH"><field name="NUM">1</field></shadow><block type="variables_get" id="cyYnT75mCLrnJ4n;rT0T"><field name="VAR">a</field></block></value><value name="B"><shadow type="math_number" id="bH-]0R0g/Y([cQh3K?}c"><field name="NUM">1</field></shadow><block type="variables_get" id="[@DcJqZT%}Gg(4H[rqr,"><field name="VAR">b</field></block></value></block></value><value name="B"><shadow type="math_number" id=";^JPIA@cZgoPX^)yOaU-"><field name="NUM">2</field></shadow><block type="math_number" id=".^1Q,VNG%O,qm]_9j:qw"><field name="NUM">2</field></block></value></block></value><value name="B"><block type="math_number" id=",)I8j;rM/#f.z[gct8|R"><field name="NUM">0</field></block></value></block></value><statement name="DO0"><block type="cout" id="Gdo6P+h:3(C}eO~Gr`z+"><value name="NAME"><block type="outstream_text" id="f~P5ARE;HB8$X*K%!~Zo"><field name="NAME">一個奇數一個偶數</field><value name="NAME"><block type="outstream_endl" id="1e8dBUl[fYi)kY7fSKHl"></block></value></block></value></block></statement><statement name="ELSE"><block type="cout" id="d#68=m4M(2K-tDwowKJ`"><value name="NAME"><block type="outstream_text" id=":@DUh(2}36~XuA7ndm!e"><field name="NAME">不是一奇一偶</field><value name="NAME"><block type="outstream_endl" id="YXN{Af`sp=7c21JgSD{j"></block></value></block></value></block></statement></block></next></block></next></block></statement></block>
+  </xml>
+  
+  <script src="answers.js"></script>
+  <script>
+    var param = window.location.toString().split('?');
+    if (param.length>1) param = param[1];
+    else                param = null;
+
+    var workspace = Blockly.inject('blocklyDiv',
+        {media: 'google-blockly/media/',
+         toolbox: document.getElementById('toolbox')});
+    if (param!=null && typeof ansXml[param]!=='undefined') {
+        Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ansXml[param]), workspace);
+    }
+    else {
+        Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'), workspace);
+    }
+  </script>
+  <script>
+    workspace.addChangeListener(function(event){
+      var xml = Blockly.Xml.workspaceToDom(workspace);
+      var xml_text = Blockly.Xml.domToText(xml);
+      document.getElementById("msg").value = xml_text;
+    });
+  </script>
+  <script>
+    /*
+    var myInterpreter = null;
+
+    function initApi(interpreter, scope) {
+      // Add an API function for the alert() block.
+      var wrapper = function(text) {
+        text = text ? text.toString() : '';
+        return interpreter.createPrimitive(alert(text));
+      };
+      interpreter.setProperty(scope, 'alert',
+          interpreter.createNativeFunction(wrapper));
+
+      // Add an API function for the prompt() block.
+      var wrapper = function(text) {
+        text = text ? text.toString() : '';
+        return interpreter.createPrimitive(prompt(text));
+      };
+      interpreter.setProperty(scope, 'prompt',
+          interpreter.createNativeFunction(wrapper));
+
+      // Add an API function for highlighting blocks.
+      var wrapper = function(id) {
+        id = id ? id.toString() : '';
+        return interpreter.createPrimitive(highlightBlock(id));
+      };
+      interpreter.setProperty(scope, 'highlightBlock',
+          interpreter.createNativeFunction(wrapper));
+    }
+
+    var highlightPause = false;
+
+    function highlightBlock(id) {
+      workspace.highlightBlock(id);
+      highlightPause = true;
+    }
+
+    function parseCode() {
+      // Generate JavaScript code and parse it.
+      Blockly.JavaScript.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
+      Blockly.JavaScript.addReservedWords('highlightBlock');
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      myInterpreter = new Interpreter(code, initApi);
+
+      alert('Ready to execute this code:\n\n' + code);
+      document.getElementById('stepButton').disabled = '';
+      highlightPause = false;
+      workspace.highlightBlock(null);
+    }
+
+    function stepCode() {
+      try {
+        var ok = myInterpreter.step();
+      } finally {
+        if (!ok) {
+          // Program complete, no more code to execute.
+          document.getElementById('stepButton').disabled = 'disabled';
+          workspace.highlightBlock(null);
+          return;
+        }
+      }
+      if (highlightPause) {
+        // A block has been highlighted.  Pause execution here.
+        highlightPause = false;
+      } else {
+        // Keep executing until a highlight statement is reached.
+        stepCode();
+      }
+    }
+    */
+  </script>
+
+</body>
+</html>

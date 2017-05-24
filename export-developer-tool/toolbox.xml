@@ -1,0 +1,60 @@
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="主程式">
+    <block type="main">
+      <statement name="NAME">
+        <shadow type="cout">
+          <value name="NAME">
+            <shadow type="outstream_text">
+              <field name="NAME">Hello, world!</field>
+            </shadow>
+          </value>
+        </shadow>
+      </statement>
+    </block>
+  </category>
+  <category name="輸入輸出">
+    <block type="cout"></block>
+    <block type="outstream_text">
+      <field name="NAME">asdf</field>
+    </block>
+    <block type="outstream_var">
+      <field name="NAME">item</field>
+    </block>
+    <block type="cin"></block>
+    <block type="instream_var">
+      <field name="NAME">item</field>
+    </block>
+  </category>
+  <category name="變數" colour="#A65C81" custom="VARIABLE"></category>
+  <category name="算數">
+    <block type="math_number">
+      <field name="NUM">0</field>
+    </block>
+    <block type="math_arithmetic">
+      <field name="OP">ADD</field>
+      <value name="A">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="B">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="判斷式">
+    <block type="controls_if"></block>
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+    </block>
+    <block type="logic_operation">
+      <field name="OP">AND</field>
+    </block>
+    <block type="logic_negate"></block>
+    <block type="logic_boolean">
+      <field name="BOOL">TRUE</field>
+    </block>
+  </category>
+</xml>
