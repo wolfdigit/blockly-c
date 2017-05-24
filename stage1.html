@@ -54,7 +54,7 @@
   </div>
 
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
-  <category name="主程式">
+  <category name="主程式" colour="#5ba55b">
     <block type="main">
       <statement name="NAME">
         <shadow type="cout">
@@ -67,7 +67,7 @@
       </statement>
     </block>
   </category>
-  <category name="輸入輸出">
+  <category name="輸入輸出" colour="#5ba55b">
     <block type="cout"></block>
     <block type="outstream_text">
       <field name="NAME">文字</field>
@@ -81,14 +81,30 @@
       <field name="NAME">a</field>
     </block>
   </category>
-  <category name="變數" colour="#A65C81" custom="VARIABLE"></category>
-  <category name="算數">
+  <category name="變數" colour="#5ba55b" custom="VARIABLE"></category>
+  <category name="算數" colour="#5ba55b">
     <block type="math_number">
       <field name="NUM">0</field>
     </block>
     <block type="math_arithmetic">
       <field name="OP">ADD</field>
     </block>
+  </category>
+  <category name="判斷式" colour="#a5935b">
+    <block type="controls_if"></block>
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+    </block>
+    <block type="logic_operation">
+      <field name="OP">AND</field>
+    </block>
+    <block type="logic_negate"></block>
+    <block type="logic_boolean">
+      <field name="BOOL">TRUE</field>
+    </block>
+  </category>
+  <category name="迴圈" colour="#a55b5b">
+    <block type="loop_for"></block>
   </category>
 </xml>
 
@@ -113,7 +129,7 @@
   </script>
   <script>
     function gen_c(block) {
-      //console.log(block);
+      console.log(block.id);
       var retv;
       retv = [];
       //retv = "[" + block.id + " ";
@@ -133,8 +149,8 @@
               //console.log(input);
               //console.log(Object.keys(input.connection.dbOpposite_));
               var childLines = [];
-              for (var j=0; j<input.connection.dbOpposite_.length; j++) {
-                  console.log(input.connection.dbOpposite_[j]);
+              for (var j=777; j<input.connection.dbOpposite_.length; j++) {
+                  //console.log(input.connection.dbOpposite_[j]);
                   childLine = gen_c(input.connection.dbOpposite_[j].sourceBlock_);
                   var indent = '    ';
                   childLine = indent + childLine.split('\n').join(indent+'\n');
@@ -143,25 +159,14 @@
               }
               inputLine = inputLine + childLines.join('\n');
               //console.log(input.connection.dbOpposite_);
-              /*
-              if (input.connection.targetConnection!=null) {
-                childLine = gen_c(input.connection.targetConnection.sourceBlock_);
-                //retv += childLine + ": " + inputLine;
-                //console.log(input);
-                //console.log(childLine);
-                var indent = '    ';
-                childLine = indent + childLine.split('\n').join(indent+'\n');
-                inputLine = inputLine + childLine;
-                //console.log(inputLine);
-                //console.log(childLine);
-                //retv += "T3";
-              }
-              */
           }
           else if (input.type==1) {     // value input
               //console.log(input);
+              //for (var j=777; j<input.connection.dbOpposite_.length; j++) {
               if (input.connection.targetConnection!=null) {
-                childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                //childLine = gen_c(input.connection.dbOpposite_[j].sourceBlock_);
+                //childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                  
                 inputLine = inputLine + childLine;
                 //console.log(inputLine);
               }
