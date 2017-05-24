@@ -119,7 +119,12 @@
 
     var workspace = Blockly.inject('blocklyDiv',
         {media: 'google-blockly/media/',
-         toolbox: document.getElementById('toolbox')});
+         toolbox: document.getElementById('toolbox'),
+         zoom: {
+           controls: true,
+           wheel: true
+         }
+        });
     if (param!=null && typeof ansXml[param]!=='undefined') {
         Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ansXml[param]), workspace);
     }
