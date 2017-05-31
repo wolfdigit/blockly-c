@@ -44,12 +44,18 @@
     </ul>
 -->
   </div>
+    <script>
+        function dontcopy() {
+            alert("不給複製唷~ >_^");
+            return false;
+        }
+    </script>
   <div id="main" style="width:100%; height:auto; position:absolute; top:20px; bottom:0">
     <div id="blocklyDiv" style="height:100%; width: 45%;"></div>
     <div style="height:100%; width:3em">
         <button id="import" style="position:absolute; margin:auto; top:0; bottom:0; height:3em; width:3em" onclick="javascript:Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(document.getElementById('msg').value), workspace);">&lt;</button>
     </div>
-    <textarea id="c_code" style="height:65%; width: 45%; position:absolute; top:0"></textarea>
+    <textarea id="c_code" style="height:65%; width: 45%; position:absolute; top:0" oncopy="return dontcopy()" oncut="return dontcopy()" onpaste="return dontcopy()"></textarea>
     <textarea id="msg" style="height:30%; width: 45%; position:absolute; bottom:0"></textarea>
   </div>
 
