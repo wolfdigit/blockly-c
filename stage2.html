@@ -2,11 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Blockly Demo: JS Interpreter</title>
-  <script src="acorn_interpreter.js"></script>
+  <title>C++入門工具</title>
   <script src="google-blockly/blockly_compressed.js"></script>
   <script src="google-blockly/blocks_compressed.js"></script>
-  <script src="google-blockly/javascript_compressed.js"></script>
   <script src="msg-C.js"></script>
   <script src="blocks-C.js"></script>
   <script src="blocks-altered.js"></script>
@@ -33,7 +31,7 @@
 </head>
 <body>
   <div id="menu" style="width:100%; height: 20px">
-      <span>第二級 - 判斷式</span> <pre id="vars" style="display:inline-block; font-weight:bold">宣告變數那一行</pre>
+      <span>第二級 - 條件判斷</span>
       <!--
     <ul>
       <li><a href="?a1">a1</a></li>
@@ -42,29 +40,71 @@
     </ul>
 -->
   </div>
+    <script>
+        function dontcopy() {
+            alert("不給複製唷~ >_^");
+            return false;
+        }
+    </script>
   <div id="main" style="width:100%; height:auto; position:absolute; top:20px; bottom:0">
     <div id="blocklyDiv" style="height:100%; width: 45%;"></div>
     <div style="height:100%; width:3em">
-        <button id="import" style="position:absolute; margin:auto; top:0; bottom:0; height:3em; width:3em" onclick="javascript:Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(document.getElementById('msg').value), workspace);">&lt;</button>
+        <script>
+            function exportToFile(target) {
+                var msgBox = document.getElementById('msg');
+                var textFile = null;
+                var makeTextFile = function (text) {
+                    var data = new Blob([text], {type: 'text/plain'});
+                    
+                    // If we are replacing a previously generated file we need to
+                    // manually revoke the object URL to avoid memory leaks.
+                    if (textFile !== null) {
+                        window.URL.revokeObjectURL(textFile);
+                    }
+
+                    textFile = window.URL.createObjectURL(data);
+
+                    return textFile;
+                };
+                //var newWin = window.open(makeTextFile(msgBox.value));
+                target.href = makeTextFile(msgBox.value);
+            }
+            function importFile() {
+                console.log(document.getElementById('upFile'));
+            }
+        </script>
+        <div id="buttWrapper" style="position:absolute; margin:auto; top:0; bottom:0; height:6em; width:3em; display:none">
+            <p>
+            <a href="" id="exportButt" onclick="return exportToFile(this)" download="workspace.xml" style="display: none">下載</a></p>
+            <p>
+                上傳<br/>
+            <input type="file" id="upFile">
+            <button id="upload" onclick="javascript:Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(document.getElementById('msg').value), workspace);">&lt;</button>
+            </p>
+        </div>
+        <button id="import" style="position:absolute; margin:auto; bottom:0; height:3em; width:3em" onclick="javascript:Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(document.getElementById('msg').value), workspace);">&lt;</button>
     </div>
-    <textarea id="msg" style="height:100%; width: 45%;"></textarea>
+    <textarea id="c_code" style="height:90%; width: 45%; position:absolute; top:0" oncopy="return dontcopy()" oncut="return dontcopy()" onpaste="return dontcopy()"></textarea>
+    <textarea id="msg" style="height:5%; width: 45%; position:absolute; bottom:0"></textarea>
   </div>
 
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
-  <category name="主程式">
+  <category name="主程式" colour="#5ba55b">
     <block type="main">
       <statement name="NAME">
-        <shadow type="cout">
+        <!--<shadow type="cout">
           <value name="NAME">
             <shadow type="outstream_text">
               <field name="NAME">Hello, world!</field>
             </shadow>
           </value>
-        </shadow>
+        </shadow>-->
       </statement>
     </block>
+    <block type="comment"></block>
+    <block type="blankLine"></block>
   </category>
-  <category name="輸入輸出">
+  <category name="輸入輸出" colour="#5ba55b">
     <block type="cout"></block>
     <block type="outstream_text">
       <field name="NAME">文字</field>
@@ -78,31 +118,32 @@
       <field name="NAME">a</field>
     </block>
   </category>
-  <category name="變數" colour="#A65C81" custom="VARIABLE"></category>
-  <category name="算數">
+  <category name="變數" colour="#5ba55b" custom="VARIABLE"></category>
+  <category name="算數" colour="#5ba55b">
     <block type="math_number">
       <field name="NUM">0</field>
     </block>
     <block type="math_arithmetic">
-      <field name="OP">ADD</field>
+      <field name="OP1">ADD</field>
     </block>
   </category>
-  <category name="判斷式">
+  <category name="判斷式" colour="#a5935b">
     <block type="controls_if"></block>
     <block type="logic_compare">
       <field name="OP">EQ</field>
     </block>
     <block type="logic_operation">
-      <field name="OP">AND</field>
+      <field name="OP1">AND</field>
     </block>
     <block type="logic_negate"></block>
-    <block type="logic_boolean">
+    <!--<block type="logic_boolean">
       <field name="BOOL">TRUE</field>
-    </block>
+    </block>-->
   </category>
 </xml>
 
   <xml id="startBlocks" style="display: none">
+    <!--<block type="main"></block>-->
   </xml>
   
   <script src="answers.js"></script>
@@ -113,7 +154,12 @@
 
     var workspace = Blockly.inject('blocklyDiv',
         {media: 'google-blockly/media/',
-         toolbox: document.getElementById('toolbox')});
+         toolbox: document.getElementById('toolbox'),
+         zoom: {
+           controls: true,
+           wheel: true
+         }
+        });
     if (param!=null && typeof ansXml[param]!=='undefined') {
         Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ansXml[param]), workspace);
     }
@@ -122,90 +168,100 @@
     }
   </script>
   <script>
+    var indent = '    ';
+
+    function gen_c(block) {
+      var retv = [];
+
+      var prevType = 0;
+      for (var i in block.inputList) {
+          var input = block.inputList[i];
+
+          var inputLine = "";
+          for (var j in input.fieldRow) {
+              inputLine += input.fieldRow[j].text_;
+          }
+          
+          if (input.type==5) {          // dummy input
+              if (prevType==5 || prevType==3) inputLine = '\n' + inputLine;
+          }
+          else if (input.type==3) {     // statement input
+              if (input.connection.targetConnection!=null) {
+                  var childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                  childLine = indent + childLine.split('\n').join('\n'+indent);
+                  inputLine = '\n' + inputLine + childLine;
+              }
+          }
+          else if (input.type==1) {     // value input
+              if (input.connection.targetConnection!=null) {
+                var childLine = gen_c(input.connection.targetConnection.sourceBlock_);
+                  
+                inputLine = inputLine + childLine;
+                if (prevType==5 || prevType==3) inputLine = '\n' + inputLine;
+              }
+          }
+          else {
+              inputLine += "T"+input.type;
+              console.log(input);
+          }
+          
+          prevType = input.type;
+        
+          retv.push(inputLine);
+      }
+      
+      retv = retv.join('');
+      
+
+
+      if (block.nextConnection!=null && block.nextConnection.targetConnection!=null) {
+        if (block.nextConnection.targetConnection.sourceBlock_.id != block.id) {
+          retv += '\n' + gen_c(block.nextConnection.targetConnection.sourceBlock_);
+        }
+      }
+
+      return retv;
+    }
+      
+      
     workspace.addChangeListener(function(event){
       var xml = Blockly.Xml.workspaceToDom(workspace);
       var xml_text = Blockly.Xml.domToText(xml);
       document.getElementById("msg").value = xml_text;
         
+        
+        
+      // var declare line
+      var varLine;
       if (Blockly.Variables.allUsedVariables(workspace).length>0) {
-          document.getElementById("vars").innerHTML = "int " + Blockly.Variables.allUsedVariables(workspace).join(', ') + ";";
+          varLine = "int " + Blockly.Variables.allUsedVariables(workspace).join(', ') + ";";
       }
       else {
-          document.getElementById("vars").innerHTML = "";
+          varLine = "";
       }
+        
+      var blockIds = Object.keys(workspace.blockDB_);
+      for (var k in workspace.blockDB_) {
+          var block = workspace.blockDB_[k];
+          if (block.type=='main') {
+              block.setFieldValue(indent+varLine, "VARDEC");
+              
+              c_code = gen_c(block);
+              document.getElementById('c_code').value = c_code;
+          }
+      }
+        
     });
   </script>
   <script>
-    /*
-    var myInterpreter = null;
-
-    function initApi(interpreter, scope) {
-      // Add an API function for the alert() block.
-      var wrapper = function(text) {
-        text = text ? text.toString() : '';
-        return interpreter.createPrimitive(alert(text));
-      };
-      interpreter.setProperty(scope, 'alert',
-          interpreter.createNativeFunction(wrapper));
-
-      // Add an API function for the prompt() block.
-      var wrapper = function(text) {
-        text = text ? text.toString() : '';
-        return interpreter.createPrimitive(prompt(text));
-      };
-      interpreter.setProperty(scope, 'prompt',
-          interpreter.createNativeFunction(wrapper));
-
-      // Add an API function for highlighting blocks.
-      var wrapper = function(id) {
-        id = id ? id.toString() : '';
-        return interpreter.createPrimitive(highlightBlock(id));
-      };
-      interpreter.setProperty(scope, 'highlightBlock',
-          interpreter.createNativeFunction(wrapper));
+    function UIExportToFile() {
+        document.getElementById("msg").style.display = 'none';
+        document.getElementById("buttWrapper").style.display = '';
+        document.getElementById("import").style.display = 'none';
+        
+        document.getElementById('import').onclick = importFile;
     }
-
-    var highlightPause = false;
-
-    function highlightBlock(id) {
-      workspace.highlightBlock(id);
-      highlightPause = true;
-    }
-
-    function parseCode() {
-      // Generate JavaScript code and parse it.
-      Blockly.JavaScript.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
-      Blockly.JavaScript.addReservedWords('highlightBlock');
-      var code = Blockly.JavaScript.workspaceToCode(workspace);
-      myInterpreter = new Interpreter(code, initApi);
-
-      alert('Ready to execute this code:\n\n' + code);
-      document.getElementById('stepButton').disabled = '';
-      highlightPause = false;
-      workspace.highlightBlock(null);
-    }
-
-    function stepCode() {
-      try {
-        var ok = myInterpreter.step();
-      } finally {
-        if (!ok) {
-          // Program complete, no more code to execute.
-          document.getElementById('stepButton').disabled = 'disabled';
-          workspace.highlightBlock(null);
-          return;
-        }
-      }
-      if (highlightPause) {
-        // A block has been highlighted.  Pause execution here.
-        highlightPause = false;
-      } else {
-        // Keep executing until a highlight statement is reached.
-        stepCode();
-      }
-    }
-    */
+    //UIExportToFile();
   </script>
-
 </body>
 </html>

@@ -3,6 +3,7 @@ Blockly.Blocks.math.HUE = 100;
 Blockly.Blocks.variables.HUE = 70;
 Blockly.Blocks.logic.HUE = 30;
 Blockly.Blocks.loops.HUE = 0;
+var indent = '    ';
 
 Blockly.Blocks['main'] = {
   init: function() {
@@ -183,6 +184,34 @@ Blockly.Blocks['loop_continue'] = {
       "nextStatement": null,
       "colour": Blockly.Blocks.loops.HUE,
       "tooltip": "略過剩下的行數直接開始下一次迴圈",
+    });
+  }
+};
+
+Blockly.Blocks['comment'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "// %1",
+      "args0": [
+          {
+            "type": "field_input",
+            "text": "這是註解"
+          }
+      ],
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": COLOR.MAIN
+    });
+  }
+};
+
+Blockly.Blocks['blankLine'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "",
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": COLOR.MAIN
     });
   }
 };
