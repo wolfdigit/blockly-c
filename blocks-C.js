@@ -12,9 +12,9 @@ Blockly.Blocks['main'] = {
         .appendField("using namespace std;");
     this.appendDummyInput();
     this.appendDummyInput()
-        .appendField("int n;");
-    this.appendDummyInput()
         .appendField("int main() {");
+    this.appendDummyInput()
+        .appendField("int n;", "VARDEC");
     this.appendStatementInput("NAME")
         .setCheck(null);
     this.appendDummyInput()
