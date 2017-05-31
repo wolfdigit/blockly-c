@@ -102,7 +102,7 @@
       <field name="OP">EQ</field>
     </block>
     <block type="logic_operation">
-      <field name="OP">AND</field>
+      <field name="OP1">AND</field>
     </block>
     <block type="logic_negate"></block>
     <!--<block type="logic_boolean">
@@ -111,11 +111,13 @@
   </category>
   <category name="迴圈" colour="#a55b5b">
     <block type="loop_for"></block>
+    <block type="loop_break"></block>
+    <block type="loop_continue"></block>
   </category>
 </xml>
 
   <xml id="startBlocks" style="display: none">
-    <block type="main"></block>
+    <!--<block type="main"></block>-->
   </xml>
   
   <script src="answers.js"></script>

@@ -79,6 +79,7 @@ Blockly.Blocks['math_arithmetic'] = {
     containerBlock.initSvg();
     if (this.needParenthesis) {
       var block = workspace.newBlock('math_arithmetic_needParenthesis');
+      block.initSvg();
       containerBlock.getInput('PARENTHESIS').connection.connect(block.outputConnection);
     }
     var connection = containerBlock.nextConnection;
@@ -581,39 +582,218 @@ Blockly.Blocks['logic_compare'] = {
 };
 
 
+var LOGICOPERATORS =
+     [[Blockly.Msg.LOGIC_OPERATION_AND, 'AND'],
+     [Blockly.Msg.LOGIC_OPERATION_OR, 'OR']];
 Blockly.Blocks['logic_operation'] = {
   /**
    * Block for logical operations: 'and', 'or'.
    * @this Blockly.Block
    */
   init: function() {
-    var OPERATORS =
-        [[Blockly.Msg.LOGIC_OPERATION_AND, 'AND'],
-         [Blockly.Msg.LOGIC_OPERATION_OR, 'OR']];
     this.setHelpUrl(Blockly.Msg.LOGIC_OPERATION_HELPURL);
     this.setColour(Blockly.Blocks.logic.HUE);
     this.setOutput(true, 'Boolean');
-    this.appendValueInput('A')
-        .appendField('(')
-        .setCheck('Boolean');
-    this.appendValueInput('B')
-        .setCheck('Boolean')
-        .appendField(new Blockly.FieldDropdown(OPERATORS), 'OP');
-    this.appendDummyInput()
-        .appendField(")");
+    this.appendValueInput("OPERAND0")
+        .setCheck("Boolean")
+        .appendField("", "PARENTHESIS_L");;
+    this.appendValueInput("OPERAND1")
+        .setCheck("Boolean")
+        .appendField(new Blockly.FieldDropdown(LOGICOPERATORS), "OP1");
+    this.appendDummyInput('TRAIL_PARENTHESIS').appendField("", 'PARENTHESIS_R');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
-      var op = thisBlock.getFieldValue('OP');
+      var op = thisBlock.getFieldValue('OP1');
       var TOOLTIPS = {
         'AND': Blockly.Msg.LOGIC_OPERATION_TOOLTIP_AND,
         'OR': Blockly.Msg.LOGIC_OPERATION_TOOLTIP_OR
       };
       return TOOLTIPS[op];
     });
+    this.opCount_ = 1;
+    this.needParenthesis = false;
+    this.setMutator(new Blockly.Mutator([['logic_operation_needParenthesis'], ['logic_operation_operator']]));
+  },
+    
+  /**
+   * Create XML to represent the number of else-if and else inputs.
+   * @return {Element} XML storage element.
+   * @this Blockly.Block
+   */
+  mutationToDom: function() {
+    if (!this.opCount_) {
+      return null;
+    }
+    var container = document.createElement('mutation');
+    if (this.opCount_) {
+      container.setAttribute('op', this.opCount_);
+    }
+    if (this.needParenthesis) {
+      container.setAttribute('parenthesis', 'true');
+    }
+    return container;
+  },
+  /**
+   * Parse XML to restore the else-if and else inputs.
+   * @param {!Element} xmlElement XML storage element.
+   * @this Blockly.Block
+   */
+  domToMutation: function(xmlElement) {
+    this.opCount_ = parseInt(xmlElement.getAttribute('op'), 10) || 0;
+    this.needParenthesis = xmlElement.getAttribute('parenthesis')=='true';
+    this.updateShape_();
+  },
+  /**
+   * Populate the mutator's dialog with this block's components.
+   * @param {!Blockly.Workspace} workspace Mutator's workspace.
+   * @return {!Blockly.Block} Root block in mutator.
+   * @this Blockly.Block
+   */
+  decompose: function(workspace) {
+    var containerBlock = workspace.newBlock('logic_operation_operator0');
+    containerBlock.initSvg();
+    if (this.needParenthesis) {
+      var block = workspace.newBlock('logic_operation_needParenthesis');
+      block.initSvg();
+      containerBlock.getInput('PARENTHESIS').connection.connect(block.outputConnection);
+    }
+    var connection = containerBlock.nextConnection;
+    for (var i = 2; i <= this.opCount_; i++) {
+      var opBlock = workspace.newBlock('logic_operation_operator');
+      opBlock.initSvg();
+      connection.connect(opBlock.previousConnection);
+      connection = opBlock.nextConnection;
+    }
+    return containerBlock;
+  },
+  /**
+   * Reconfigure this block based on the mutator dialog's components.
+   * @param {!Blockly.Block} containerBlock Root block in mutator.
+   * @this Blockly.Block
+   */
+  compose: function(containerBlock) {
+    if (containerBlock.getInput('PARENTHESIS').connection.targetConnection) this.needParenthesis = true;
+    else                                                                    this.needParenthesis = false;
+    var clauseBlock = containerBlock.nextConnection.targetBlock();
+    // Count number of inputs.
+    this.opCount_ = 1;
+    var operatorSelections = [null];
+    var operandConnections = [null];
+    while (clauseBlock) {
+      switch (clauseBlock.type) {
+        case 'logic_operation_operator':
+          this.opCount_++;
+          operatorSelections[this.opCount_] = clauseBlock.operatorSelection_;
+          operandConnections[this.opCount_] = clauseBlock.operandConnection_;
+          break;
+        default:
+          throw 'Unknown block type.';
+      }
+      clauseBlock = clauseBlock.nextConnection &&
+          clauseBlock.nextConnection.targetBlock();
+    }
+    this.updateShape_();
+    // Reconnect any child blocks.
+    for (var i = 2; i <= this.opCount_; i++) {
+      this.setFieldValue(operatorSelections[i], 'OP'+i);
+      Blockly.Mutator.reconnect(operandConnections[i], this, 'OPERAND' + i);
+    }
+  },
+  /**
+   * Store pointers to any connected child blocks.
+   * @param {!Blockly.Block} containerBlock Root block in mutator.
+   * @this Blockly.Block
+   */
+  saveConnections: function(containerBlock) {
+    var clauseBlock = containerBlock.nextConnection.targetBlock();
+    var i = 2;
+    while (clauseBlock) {
+      switch (clauseBlock.type) {
+        case 'logic_operation_operator':
+          var fieldOperator = this.getFieldValue('OP'+i);
+          var inputOperand = this.getInput('OPERAND'+i)
+          clauseBlock.operatorSelection_ = fieldOperator;
+          clauseBlock.operandConnection_ =
+              inputOperand && inputOperand.connection.targetConnection;
+          i++;
+          break;
+        default:
+          throw 'Unknown block type.';
+      }
+      clauseBlock = clauseBlock.nextConnection &&
+          clauseBlock.nextConnection.targetBlock();
+    }
+  },
+  /**
+   * Modify this block to have the correct number of inputs.
+   * @private
+   * @this Blockly.Block
+   */
+  updateShape_: function() {
+    // Delete everything.
+    var i = 2;
+    while (this.getInput('OPERAND' + i)) {
+      this.removeInput('OPERAND' + i);
+      i++;
+    }
+    this.removeInput('TRAIL_PARENTHESIS');
+    this.initSvg();
+    // Rebuild block.
+    for (var i = 2; i <= this.opCount_; i++) {
+      var field = new Blockly.FieldDropdown(LOGICOPERATORS);
+      this.appendValueInput('OPERAND' + i)
+          .setCheck('Boolean')
+          .appendField(field, 'OP'+i);
+      this.initSvg();
+    }
+    this.appendDummyInput('TRAIL_PARENTHESIS').appendField("", 'PARENTHESIS_R');
+    if (this.needParenthesis) {
+      this.setFieldValue("(", 'PARENTHESIS_L');
+      this.setFieldValue(")", 'PARENTHESIS_R');
+    }
+    else {
+      this.setFieldValue("", 'PARENTHESIS_L');
+      this.setFieldValue("", 'PARENTHESIS_R');
+    }
+  }
+
+};
+
+Blockly.Blocks['logic_operation_operator0'] = {
+  init: function() {
+    this.setColour(Blockly.Blocks.logic.HUE);
+    this.appendValueInput('PARENTHESIS')
+        .setCheck('needParenthesis')
+        .appendField('AND/OR');
+    this.setPreviousStatement(false);
+    this.setNextStatement(true);
+    //this.setTooltip('懶得解釋...');
+    this.contextMenu = false;
   }
 };
+Blockly.Blocks['logic_operation_operator'] = {
+  init: function() {
+    this.setColour(Blockly.Blocks.logic.HUE);
+    this.appendDummyInput()
+        .appendField('AND/OR');
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    //this.setTooltip('懶得解釋...');
+    this.contextMenu = false;
+  },
+  operatorSelection_: 'AND'
+};
+Blockly.Blocks['logic_operation_needParenthesis'] = {
+  init: function() {
+    this.setColour(Blockly.Blocks.logic.HUE);
+    this.appendDummyInput()
+        .appendField('括號');
+    this.setOutput(true, "needParenthesis");
+  }
+}
+
 
 Blockly.Blocks['logic_negate'] = {
   /**

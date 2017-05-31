@@ -14,9 +14,11 @@ Blockly.Blocks['main'] = {
     this.appendDummyInput()
         .appendField("int main() {");
     this.appendDummyInput()
-        .appendField("int n;", "VARDEC");
+        .appendField(indent+"int n;", "VARDEC");
     this.appendStatementInput("NAME")
         .setCheck(null);
+    this.appendDummyInput()
+        .appendField(indent+"return 0;");
     this.appendDummyInput()
         .appendField("}");
     this.setInputsInline(false);
@@ -158,5 +160,29 @@ Blockly.Blocks['loop_for'] = {
         }
       }
     };
+  }
+};
+
+Blockly.Blocks['loop_break'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "break;",
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": Blockly.Blocks.loops.HUE,
+      "tooltip": "跳離最內圈的迴圈",
+    });
+  }
+};
+
+Blockly.Blocks['loop_continue'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "continue;",
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": Blockly.Blocks.loops.HUE,
+      "tooltip": "略過剩下的行數直接開始下一次迴圈",
+    });
   }
 };
