@@ -205,6 +205,28 @@ Blockly.Blocks['comment'] = {
   }
 };
 
+Blockly.Blocks['commentBlk'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "/* %1 %2 */",
+      "args0": [
+        {
+          "type": "input_dummy"
+        },
+        {
+          "type": "input_statement",
+          "name": "commented-out-statments"
+        }
+      ],
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": COLOR.MAIN,
+      "tooltip": "",
+      "helpUrl": ""
+    });
+  }
+};
+
 Blockly.Blocks['blankLine'] = {
   init: function() {
     this.jsonInit({
@@ -212,6 +234,62 @@ Blockly.Blocks['blankLine'] = {
       "previousStatement": null,
       "nextStatement": null,
       "colour": COLOR.MAIN
+    });
+  }
+};
+
+Blockly.Blocks['arraySet'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "%1 [ %2 ] = %3",
+      "args0": [
+        {
+          "type": "field_variable",
+          "name": "ARRAYNAME",
+          "variable": "item"
+        },
+        {
+          "type": "field_variable",
+          "name": "INDEXNAME",
+          "variable": "item"
+        },
+        {
+          "type": "input_value",
+          "name": "RHS"
+        }
+      ],
+      "inputsInline": false,
+      "previousStatement": null,
+      "nextStatement": null,
+      "colour": Blockly.Blocks.variables.HUE,
+      "tooltip": "",
+      "helpUrl": ""
+    });
+  }
+};
+
+Blockly.Blocks['arrayGet'] = {
+  init: function() {
+    this.jsonInit({
+      "type": "block_type",
+      "message0": "%1 [ %2 ]",
+      "args0": [
+        {
+          "type": "field_variable",
+          "name": "ARRAYNAME",
+          "variable": "item"
+        },
+        {
+          "type": "field_variable",
+          "name": "INDEXNAME",
+          "variable": "item"
+        }
+      ],
+      "inputsInline": false,
+      "output": null,
+      "colour": Blockly.Blocks.variables.HUE,
+      "tooltip": "",
+      "helpUrl": ""
     });
   }
 };

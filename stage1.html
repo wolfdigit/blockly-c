@@ -102,6 +102,7 @@
       </statement>
     </block>
     <block type="comment"></block>
+    <block type="commentBlk"></block>
     <block type="blankLine"></block>
   </category>
   <category name="輸入輸出" colour="#5ba55b">
@@ -154,84 +155,19 @@
         Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'), workspace);
     }
   </script>
+  <script src="gen-C.js"></script>
   <script>
-    var indent = '    ';
-
-    function gen_c(block) {
-      var retv = [];
-
-      var prevType = 0;
-      for (var i in block.inputList) {
-          var input = block.inputList[i];
-
-          var inputLine = "";
-          for (var j in input.fieldRow) {
-              inputLine += input.fieldRow[j].text_;
-          }
-          
-          if (input.type==5) {          // dummy input
-              if (prevType==5 || prevType==3) inputLine = '\n' + inputLine;
-          }
-          else if (input.type==3) {     // statement input
-              if (input.connection.targetConnection!=null) {
-                  var childLine = gen_c(input.connection.targetConnection.sourceBlock_);
-                  childLine = indent + childLine.split('\n').join('\n'+indent);
-                  inputLine = '\n' + inputLine + childLine;
-              }
-          }
-          else if (input.type==1) {     // value input
-              if (input.connection.targetConnection!=null) {
-                var childLine = gen_c(input.connection.targetConnection.sourceBlock_);
-                  
-                inputLine = inputLine + childLine;
-                if (prevType==5 || prevType==3) inputLine = '\n' + inputLine;
-              }
-          }
-          else {
-              inputLine += "T"+input.type;
-              console.log(input);
-          }
-          
-          prevType = input.type;
-        
-          retv.push(inputLine);
-      }
-      
-      retv = retv.join('');
-      
-
-
-      if (block.nextConnection!=null && block.nextConnection.targetConnection!=null) {
-        if (block.nextConnection.targetConnection.sourceBlock_.id != block.id) {
-          retv += '\n' + gen_c(block.nextConnection.targetConnection.sourceBlock_);
-        }
-      }
-
-      return retv;
-    }
-      
-      
     workspace.addChangeListener(function(event){
       var xml = Blockly.Xml.workspaceToDom(workspace);
       var xml_text = Blockly.Xml.domToText(xml);
       document.getElementById("msg").value = xml_text;
-        
-        
-        
-      // var declare line
-      var varLine;
-      if (Blockly.Variables.allUsedVariables(workspace).length>0) {
-          varLine = "int " + Blockly.Variables.allUsedVariables(workspace).join(', ') + ";";
-      }
-      else {
-          varLine = "";
-      }
+      
         
       var blockIds = Object.keys(workspace.blockDB_);
       for (var k in workspace.blockDB_) {
           var block = workspace.blockDB_[k];
           if (block.type=='main') {
-              block.setFieldValue(indent+varLine, "VARDEC");
+              block.setFieldValue(genVarLine(), "VARDEC");
               
               c_code = gen_c(block);
               document.getElementById('c_code').value = c_code;
