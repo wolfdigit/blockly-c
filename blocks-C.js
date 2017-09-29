@@ -15,8 +15,10 @@ Blockly.Blocks['main'] = {
     this.appendDummyInput()
         .appendField("int main() {");
     this.appendDummyInput()
-        .appendField(indent+"int n;", "VARDEC");
-    this.appendStatementInput("NAME")
+        .appendField(indent+"", "VARDEC");
+    this.appendDummyInput("ARRDEC")
+        .appendField(indent+"", "ARRDEC");
+    this.appendStatementInput("MAIN")
         .setCheck(null);
     this.appendDummyInput()
         .appendField(indent+"return 0;");
@@ -32,7 +34,7 @@ Blockly.BlockSvg.START_HAT = true;
 
 Blockly.Blocks['cout'] = {
   init: function() {
-    this.appendValueInput("NAME")
+    this.appendValueInput("OUTSTREAM")
         .setCheck("outstream")
         .appendField("cout");
     this.appendDummyInput()
@@ -48,10 +50,10 @@ Blockly.Blocks['cout'] = {
 
 Blockly.Blocks['outstream_text'] = {
   init: function() {
-    this.appendValueInput("NAME")
+    this.appendValueInput("OUTSTREAM")
         .setCheck("outstream")
         .appendField(" << \"")
-        .appendField(new Blockly.FieldTextInput("asdf"), "NAME")
+        .appendField(new Blockly.FieldTextInput("asdf"), "TEXT")
         .appendField("\"");
     this.setInputsInline(false);
     this.setOutput(true, "outstream");
@@ -63,10 +65,10 @@ Blockly.Blocks['outstream_text'] = {
 
 Blockly.Blocks['outstream_var'] = {
   init: function() {
-    this.appendValueInput("NAME")
+    this.appendValueInput("OUTSTREAM")
         .setCheck("outstream")
         .appendField(" << ")
-        .appendField(new Blockly.FieldVariable("item"), "NAME");
+        .appendField(new Blockly.FieldVariable("item"), "VAR");
     this.setInputsInline(false);
     this.setOutput(true, "outstream");
     this.setColour(COLOR.COUT);
@@ -90,7 +92,7 @@ Blockly.Blocks['outstream_endl'] = {
 
 Blockly.Blocks['cin'] = {
   init: function() {
-    this.appendValueInput("NAME")
+    this.appendValueInput("INSTREAM")
         .setCheck("instream")
         .appendField("cin");
     this.appendDummyInput()
@@ -106,10 +108,10 @@ Blockly.Blocks['cin'] = {
 
 Blockly.Blocks['instream_var'] = {
   init: function() {
-    this.appendValueInput("NAME")
+    this.appendValueInput("INSTREAM")
         .setCheck("instream")
         .appendField(" >> ")
-        .appendField(new Blockly.FieldVariable("item"), "NAME");
+        .appendField(new Blockly.FieldVariable("item"), "VAR");
     this.setInputsInline(false);
     this.setOutput(true, "instream");
     this.setColour(COLOR.CIN);
@@ -151,7 +153,7 @@ Blockly.Blocks['loop_for'] = {
     this.setTooltip('');
     this.setHelpUrl('');
     this.onchange = function(changeEvent) {
-      if (typeof changeEvent.name!=="undefined" && changeEvent.name.startsWith("VAR")) {
+      if (typeof changeEvent.name!=="undefined" && changeEvent.name.match(/^VAR\d$/)) {
         if (typeof changeEvent.newValue!=="undefined") {
           this.inputList[0].fieldRow[1].setValue(changeEvent.newValue);
           this.inputList[1].fieldRow[1].setValue(changeEvent.newValue);
@@ -241,7 +243,7 @@ Blockly.Blocks['blankLine'] = {
 Blockly.Blocks['arraySet'] = {
   init: function() {
     this.jsonInit({
-      "message0": "%1 [ %2 ] = %3",
+      "message0": "%1 [ %2 ] = %3 ;",
       "args0": [
         {
           "type": "field_variable",
@@ -249,16 +251,17 @@ Blockly.Blocks['arraySet'] = {
           "variable": "item"
         },
         {
-          "type": "field_variable",
-          "name": "INDEXNAME",
-          "variable": "item"
+          "type": "input_value",
+          "name": "INDEX",
+          "check": "Number"
         },
         {
           "type": "input_value",
-          "name": "RHS"
+          "name": "RHS",
+          "check": "Number"
         }
       ],
-      "inputsInline": false,
+      "inputsInline": true,
       "previousStatement": null,
       "nextStatement": null,
       "colour": Blockly.Blocks.variables.HUE,
@@ -280,13 +283,13 @@ Blockly.Blocks['arrayGet'] = {
           "variable": "item"
         },
         {
-          "type": "field_variable",
-          "name": "INDEXNAME",
-          "variable": "item"
+          "type": "input_value",
+          "name": "INDEX",
+          "check": "Number"
         }
       ],
-      "inputsInline": false,
-      "output": null,
+      "inputsInline": true,
+      "output": "Number",
       "colour": Blockly.Blocks.variables.HUE,
       "tooltip": "",
       "helpUrl": ""

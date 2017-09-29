@@ -8,6 +8,8 @@
   <script src="msg-C.js"></script>
   <script src="blocks-C.js"></script>
   <script src="blocks-altered.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
   <style>
     * {
       margin: 0;
@@ -84,14 +86,15 @@
         </div>
         <button id="import" style="position:absolute; margin:auto; bottom:0; height:3em; width:3em" onclick="javascript:Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(document.getElementById('msg').value), workspace);">&lt;</button>
     </div>
-    <textarea id="c_code" style="height:90%; width: 45%; position:absolute; top:0" oncopy="return dontcopy()" oncut="return dontcopy()" onpaste="return dontcopy()"></textarea>
+    <!--<textarea id="c_code" style="height:90%; width: 45%; position:absolute; top:0" oncopy="return dontcopy()" oncut="return dontcopy()" onpaste="return dontcopy()"></textarea>-->
+    <pre style="height:90%; width: 45%; position:absolute; top:0" oncopy="return dontcopy()" oncut="return dontcopy()" onpaste="return dontcopy()"><code id="c_code" class="cpp"></code></pre>
     <textarea id="msg" style="height:5%; width: 45%; position:absolute; bottom:0"></textarea>
   </div>
 
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
   <category name="主程式" colour="#5ba55b">
     <block type="main">
-      <statement name="NAME">
+      <statement name="MAIN">
         <!--<shadow type="cout">
           <value name="NAME">
             <shadow type="outstream_text">
@@ -108,15 +111,15 @@
   <category name="輸入輸出" colour="#5ba55b">
     <block type="cout"></block>
     <block type="outstream_text">
-      <field name="NAME">文字</field>
+      <field name="TEXT">文字</field>
     </block>
     <block type="outstream_var">
-      <field name="NAME">a</field>
+      <field name="VAR">a</field>
     </block>
     <block type="outstream_endl"></block>
     <block type="cin"></block>
     <block type="instream_var">
-      <field name="NAME">a</field>
+      <field name="VAR">a</field>
     </block>
   </category>
   <category name="變數" colour="#5ba55b" custom="VARIABLE"></category>
@@ -126,6 +129,16 @@
     </block>
     <block type="math_arithmetic">
       <field name="OP1">ADD</field>
+      <value name="OPERAND0">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="OPERAND1">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
     </block>
   </category>
 </xml>
@@ -162,15 +175,22 @@
       var xml_text = Blockly.Xml.domToText(xml);
       document.getElementById("msg").value = xml_text;
       
-        
-      var blockIds = Object.keys(workspace.blockDB_);
       for (var k in workspace.blockDB_) {
           var block = workspace.blockDB_[k];
           if (block.type=='main') {
-              block.setFieldValue(genVarLine(), "VARDEC");
+              if (event.name && event.name.match(/^ARR\d+$/)) {
+                  arrSizes[event.name] = event.newValue;
+              }
+              else {
+                  var varLines = genVarLines();
+                  block.setFieldValue(varLines[0], "VARDEC");
+                  //block.setFieldValue(varLines[1], "ARRDEC");
+                  setBlockARRDECInput(block.getInput("ARRDEC"), varLines[1]);
+              }
               
               c_code = gen_c(block);
-              document.getElementById('c_code').value = c_code;
+              document.getElementById('c_code').textContent = c_code;
+              hljs.highlightBlock(document.getElementById('c_code'));
           }
       }
         
